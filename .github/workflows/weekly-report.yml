@@ -1,0 +1,26 @@
+name: Weekly Report
+
+on:
+  schedule:
+    # 매주 월요일 한국시간 09:00 (UTC 00:00)
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # 수동 실행도 가능
+
+jobs:
+  new-week:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv beautifulsoup4
+
+      - name: Run weekly report
+        env:
+          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
+        run: python weekly_report.py new-week
