@@ -27,7 +27,11 @@ class ConfluenceAPI:
         """v1 REST API 호출."""
         url = f"{CONFLUENCE_API_URL}{path}"
         resp = requests.request(method, url, auth=self.auth, headers=self.headers, **kwargs)
-        resp.raise_for_status()
+        if not resp.ok:
+            print(f"[API ERROR] {resp.status_code} {resp.reason}")
+            print(f"[API ERROR] URL: {url}")
+            print(f"[API ERROR] Response: {resp.text[:500]}")
+            resp.raise_for_status()
         if resp.status_code == 204 or not resp.text:
             return {}
         return resp.json()
